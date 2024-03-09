@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 df = pd.read_csv('Startup_Cleaned.csv')
 st.set_page_config(layout='wide',page_title='Startup Analysis')
@@ -238,13 +237,15 @@ def load_overall_details():
                 unsafe_allow_html=True)
 
     # Pivot the DataFrame to create a matrix suitable for a heatmap
-    heatmap_data = df.pivot_table(index='startup', columns='year', values='amount', aggfunc='sum', fill_value=0)
-
-    # Create a heatmap using Seaborn
-    plt.figure(figsize=(12, 8))
-    sns.heatmap(heatmap_data, cmap='YlGnBu', annot=True, fmt=".0f", linewidths=.5)
-    plt.title('Funding Heatmap by Startup and Year')
-    st.pyplot(plt)
+    heatmap_data = df.pivot_table(values='amount', index='year', columns='month', aggfunc='sum')
+    fig10, ax10 = plt.subplots()
+    cax = ax10.matshow(heatmap_data, cmap='viridis')
+    fig10.colorbar(cax)
+    ax10.set_xticks(range(len(heatmap_data.columns)))
+    ax10.set_xticklabels(heatmap_data.columns, rotation=45)
+    ax10.set_yticks(range(len(heatmap_data.index)))
+    ax10.set_yticklabels(heatmap_data.index)
+    st.pyplot(fig10)
 
 st.sidebar.title('Startup Funding Analysis')
 option = st.sidebar.selectbox('Select One',['Overall Analysis','StartUp','Investor'])
